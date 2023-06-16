@@ -20,7 +20,7 @@ connect_db(app)
 # Having the Debug Toolbar show redirects explicitly is often useful;
 # however, if you want to turn it off, you can uncomment this line:
 #
-# app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 debug = DebugToolbarExtension(app)
 
@@ -40,15 +40,17 @@ def root():
 def show_all_playlists():
     """Return a list of playlists."""
 
+    form = PlaylistForm()
     playlists = Playlist.query.all()
-    return render_template("playlists.html", playlists=playlists)
+    return render_template("playlists.html", playlists=playlists, form=form)
 
 
 @app.route("/playlists/<int:playlist_id>")
 def show_playlist(playlist_id):
     """Show detail on specific playlist."""
 
-    # ADD THE NECESSARY CODE HERE FOR THIS ROUTE TO WORK
+    playlist = Playlist.query.get_or_404(playlist_id)
+    return render_template('playlist.html', playlist=playlist)
 
 
 @app.route("/playlists/add", methods=["GET", "POST"])
@@ -59,7 +61,17 @@ def add_playlist():
     - if valid: add playlist to SQLA and redirect to list-of-playlists
     """
 
-    # ADD THE NECESSARY CODE HERE FOR THIS ROUTE TO WORK
+    form = PlaylistForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        description = form.description.data
+
+        playlist = Playlist(name=name, description=description)
+        db.session.add(playlist)
+        db.session.commit()
+        return redirect('/playlists')
+    else:
+        return render_template('new_playlist.html', form=form)
 
 
 ##############################################################################
@@ -78,7 +90,8 @@ def show_all_songs():
 def show_song(song_id):
     """return a specific song"""
 
-    # ADD THE NECESSARY CODE HERE FOR THIS ROUTE TO WORK
+    song = Song.query.get_or_404(song_id)
+    return render_template('song.html', song=song)
 
 
 @app.route("/songs/add", methods=["GET", "POST"])
@@ -88,8 +101,13 @@ def add_song():
     - if form not filled out or invalid: show form
     - if valid: add playlist to SQLA and redirect to list-of-songs
     """
+    
+    # form = NewSongForPlaylistForm()
+    # songs = db.session.query(Song.title)
+    # form.song.choices = songs
+    # if form.validate_on_submit():
+        
 
-    # ADD THE NECESSARY CODE HERE FOR THIS ROUTE TO WORK
 
 
 @app.route("/playlists/<int:playlist_id>/add-song", methods=["GET", "POST"])
