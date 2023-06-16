@@ -2,6 +2,25 @@
 
 {% block content %}
 
-<h1>Add a form that when submitted creates a new song!</h1>
+<!-- <h1>Add a form that when submitted creates a new song!</h1> -->
+
+<h1>Add a New Song</h1>
+
+<form action="/songs/add" method="POST">
+    {{ form.hidden_tag() }}
+    {% for field in form if field.widget.input_type != 'hidden' %}
+    <div class="p-3">
+        {{field.label(class_="form-label")}}
+        {{field(class_="form-control")}}
+  
+        {% for err in field.errors %}
+        <small class="form-text text-danger">{{err}}</small>
+        {% endfor %}
+    </div>
+    {% endfor %}
+    <button class="btn btn-success">Add Song</button>
+    <a href="/" class="btn btn-warning">Go Back</a>
+  </form>
+
 
 {% endblock %}

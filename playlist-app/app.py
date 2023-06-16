@@ -101,11 +101,19 @@ def add_song():
     - if form not filled out or invalid: show form
     - if valid: add playlist to SQLA and redirect to list-of-songs
     """
-    
     # form = NewSongForPlaylistForm()
     # songs = db.session.query(Song.title)
     # form.song.choices = songs
-    # if form.validate_on_submit():
+    form = SongForm()
+    if form.validate_on_submit():
+        title = form.title.data
+        artist = form.artist.data
+        song = Song(title=title, artist=artist)
+        db.session.add(song)
+        db.session.commit()
+        return redirect('/songs')
+    else:
+        return render_template('new_song.html', form=form)
         
 
 
